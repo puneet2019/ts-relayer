@@ -168,7 +168,7 @@ Alternatively, you can create a new file with whatever name and `.md` extension 
 
 ```md
 ---
-"@confio/relayer": patch
+"@puneet2019/ts-relayer": patch
 ---
 
 The summary of your change goes here.

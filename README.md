@@ -1,6 +1,6 @@
 # Relayer
 
-[![npm version](https://img.shields.io/npm/v/@confio/relayer.svg)](https://www.npmjs.com/package/@confio/relayer)
+[![npm version](https://img.shields.io/npm/v/@puneet2019/ts-relayer.svg)](https://www.npmjs.com/package/@puneet2019/ts-relayer)
 
 TypeScript implementation of an [IBC](https://www.ibcprotocol.dev/) Relayer.
 
@@ -16,7 +16,7 @@ You can see an example of embedding the relayer in a [webapp below](#Web-App).
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) 18 or later
+- [Node.js](https://nodejs.org/) 22 or later
 - RPC addresses of 2 full nodes on compatible, IBC-enabled chains
 - See [Chain Requirements below](#Chain-Requirements) for details of what chains are supported
 
@@ -34,16 +34,16 @@ minimum compatible version of the SDK.
 
 ### NPM
 
-Install the [latest release](https://github.com/confio/ts-relayer/releases/latest).
+Install the [latest release](https://github.com/puneet2019/ts-relayer/releases/latest).
 
 ```sh
-npm i -g @confio/relayer
+npm i -g @puneet2019/ts-relayer
 ```
 
 Alternatively, install from the `main` branch.
 
 ```sh
-npm i -g @confio/relayer@main
+npm i -g @puneet2019/ts-relayer@main
 ```
 
 > **NOTE:** We do a manual release after completing a predefined milestone or when it feels right. No release schedule is in place <em>yet</em>. To utilize the latest changes, use the `main` tag during the installation.
@@ -277,4 +277,4 @@ and [running the relayer](https://github.com/clockworkgr/ts-relayer-example/blob
 
 ![screenshot](https://user-images.githubusercontent.com/6826762/116312118-b3f40e00-a7b4-11eb-879b-ce3135764460.png)
 
-The key import is `import { IbcClient, Link } from "@confio/relayer/build";`
+The key import is `import { IbcClient, Link } from "@puneet2019/ts-relayer/build";`

@@ -47,7 +47,7 @@ function copyRegistryFile(from: string, to: string) {
 async function pullRegistryFromRemote(writeTo: string) {
   try {
     const registryFromRemote = await axios.get(
-      "https://raw.githubusercontent.com/confio/ts-relayer/main/demo/registry.yaml",
+      "https://raw.githubusercontent.com/puneet2019/ts-relayer/main/demo/registry.yaml",
     );
     fs.writeFileSync(writeTo, registryFromRemote.data);
     console.log(`Pulled default ${registryFile} from remote.`);
