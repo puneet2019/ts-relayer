@@ -1,6 +1,6 @@
 import { toHex } from "@cosmjs/encoding";
 import { Event, fromTendermintEvent } from "@cosmjs/stargate";
-import { tendermint34, tendermint37 } from "@cosmjs/tendermint-rpc";
+import { comet38, tendermint37 } from "@cosmjs/tendermint-rpc";
 import { Packet } from "cosmjs-types/ibc/core/channel/v1/channel";
 
 import { IbcClient } from "./ibcclient";
@@ -63,7 +63,7 @@ export class Endpoint {
   }
 
   public async getLatestCommit(): Promise<
-    tendermint34.CommitResponse | tendermint37.CommitResponse
+    tendermint37.CommitResponse | comet38.CommitResponse
   > {
     return this.client.getCommit();
   }
@@ -85,7 +85,7 @@ export class Endpoint {
       search.blocks.map(async ({ block }) => {
         const height = block.header.height;
         const result = await this.client.tm.blockResults(height);
-        return parsePacketsFromBlockResult(result).map((packet) => ({
+        return parsePacketsFromBlockResult(result as any).map((packet) => ({
           packet,
           height,
           sender: "",

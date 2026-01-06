@@ -2,7 +2,7 @@ import { fromBase64, fromHex } from "@cosmjs/encoding";
 import {
   fromRfc3339WithNanoseconds,
   ReadonlyDateWithNanoseconds,
-  tendermint34,
+  tendermint37,
 } from "@cosmjs/tendermint-rpc";
 import test from "ava";
 
@@ -19,7 +19,7 @@ import {
 
 test("parsePacketsFromEvents", (t) => {
   // From https://gist.github.com/webmaster128/14d273b3b462c1c653f51e3e1edb8cd5
-  const events: tendermint34.Event[] = [
+  const events: tendermint37.Event[] = [
     {
       type: "coin_spent",
       attributes: [

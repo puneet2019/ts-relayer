@@ -1,26 +1,26 @@
-import { fromUtf8, toHex, toUtf8 } from "@cosmjs/encoding";
+import { fromUtf8, toHex, toUtf8 } from '@cosmjs/encoding';
 import {
   DeliverTxResponse,
   Event,
-  fromTendermintEvent,
-} from "@cosmjs/stargate";
+  fromTendermintEvent
+} from '@cosmjs/stargate';
 import {
+  comet38,
   ReadonlyDateWithNanoseconds,
   ValidatorPubkey as RpcPubKey,
-  tendermint34,
-  tendermint37,
-} from "@cosmjs/tendermint-rpc";
-import { HashOp, LengthOp } from "cosmjs-types/cosmos/ics23/v1/proofs";
-import { Timestamp } from "cosmjs-types/google/protobuf/timestamp";
-import { Packet } from "cosmjs-types/ibc/core/channel/v1/channel";
-import { Height } from "cosmjs-types/ibc/core/client/v1/client";
+  tendermint37
+} from '@cosmjs/tendermint-rpc';
+import { HashOp, LengthOp } from 'cosmjs-types/cosmos/ics23/v1/proofs';
+import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp';
+import { Packet } from 'cosmjs-types/ibc/core/channel/v1/channel';
+import { Height } from 'cosmjs-types/ibc/core/client/v1/client';
 import {
   ClientState as TendermintClientState,
-  ConsensusState as TendermintConsensusState,
-} from "cosmjs-types/ibc/lightclients/tendermint/v1/tendermint";
-import { PublicKey as ProtoPubKey } from "cosmjs-types/tendermint/crypto/keys";
+  ConsensusState as TendermintConsensusState
+} from 'cosmjs-types/ibc/lightclients/tendermint/v1/tendermint';
+import { PublicKey as ProtoPubKey } from 'cosmjs-types/tendermint/crypto/keys';
 
-import { PacketWithMetadata } from "./endpoint";
+import { PacketWithMetadata } from './endpoint';
 
 export interface Ack {
   readonly acknowledgement: Uint8Array;
@@ -28,7 +28,7 @@ export interface Ack {
 }
 
 export function createDeliverTxFailureMessage(
-  result: DeliverTxResponse,
+  result: DeliverTxResponse
 ): string {
   return `Error when broadcasting tx ${result.transactionHash} at height ${result.height}. Code: ${result.code}; Raw log: ${result.rawLog}`;
 }
@@ -38,7 +38,7 @@ export function toIntHeight(height?: Height): number {
 }
 
 export function ensureIntHeight(height: bigint | Height): number {
-  if (typeof height === "bigint") {
+  if (typeof height === 'bigint') {
     return Number(height);
   }
   return toIntHeight(height);
@@ -47,11 +47,11 @@ export function ensureIntHeight(height: bigint | Height): number {
 export function subtractBlock(height: Height, count = 1n): Height {
   return {
     revisionNumber: height.revisionNumber,
-    revisionHeight: height.revisionHeight - count,
+    revisionHeight: height.revisionHeight - count
   };
 }
 
-const regexRevNum = new RegExp("-([1-9][0-9]*)$");
+const regexRevNum = new RegExp('-([1-9][0-9]*)$');
 
 export function parseRevisionNumber(chainId: string): bigint {
   const match = chainId.match(regexRevNum);
@@ -64,60 +64,60 @@ export function parseRevisionNumber(chainId: string): bigint {
 // may will run the transform if value is defined, otherwise returns undefined
 export function may<T, U>(
   transform: (val: T) => U,
-  value: T | null | undefined,
+  value: T | null | undefined
 ): U | undefined {
   return value === undefined || value === null ? undefined : transform(value);
 }
 
 export function mapRpcPubKeyToProto(
-  pubkey?: RpcPubKey,
+  pubkey?: RpcPubKey
 ): ProtoPubKey | undefined {
   if (pubkey === undefined) {
     return undefined;
   }
-  if (pubkey.algorithm == "ed25519") {
+  if (pubkey.algorithm == 'ed25519') {
     return {
       ed25519: pubkey.data,
-      secp256k1: undefined,
+      secp256k1: undefined
     };
-  } else if (pubkey.algorithm == "secp256k1") {
+  } else if (pubkey.algorithm == 'secp256k1') {
     return {
       ed25519: undefined,
-      secp256k1: pubkey.data,
+      secp256k1: pubkey.data
     };
   } else {
     throw new Error(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      `Unknown validator pubkey type: ${(pubkey as any).algorithm}`,
+      `Unknown validator pubkey type: ${(pubkey as any).algorithm}`
     );
   }
 }
 
 export function timestampFromDateNanos(
-  date: ReadonlyDateWithNanoseconds,
+  date: ReadonlyDateWithNanoseconds
 ): Timestamp {
   const nanos = (date.getTime() % 1000) * 1000000 + (date.nanoseconds ?? 0);
   return Timestamp.fromPartial({
     seconds: BigInt(Math.floor(date.getTime() / 1000)),
-    nanos,
+    nanos
   });
 }
 
 export function secondsFromDateNanos(
-  date: ReadonlyDateWithNanoseconds,
+  date: ReadonlyDateWithNanoseconds
 ): number {
   return Math.floor(date.getTime() / 1000);
 }
 
 export function buildConsensusState(
-  header: tendermint34.Header | tendermint37.Header,
+  header: tendermint37.Header
 ): TendermintConsensusState {
   return TendermintConsensusState.fromPartial({
     timestamp: timestampFromDateNanos(header.time),
     root: {
-      hash: header.appHash,
+      hash: header.appHash
     },
-    nextValidatorsHash: header.nextValidatorsHash,
+    nextValidatorsHash: header.nextValidatorsHash
   });
 }
 
@@ -126,7 +126,7 @@ export function buildClientState(
   chainId: string,
   unbondingPeriodSec: number,
   trustPeriodSec: number,
-  height: Height,
+  height: Height
 ): TendermintClientState {
   // Copied here until https://github.com/confio/ics23/issues/36 is resolved
   // https://github.com/confio/ics23/blob/master/js/src/proofs.ts#L11-L26
@@ -136,15 +136,15 @@ export function buildClientState(
       hash: HashOp.SHA256,
       prehashValue: HashOp.SHA256,
       prehashKey: HashOp.NO_HASH,
-      length: LengthOp.VAR_PROTO,
+      length: LengthOp.VAR_PROTO
     },
     innerSpec: {
       childOrder: [0, 1],
       minPrefixLength: 4,
       maxPrefixLength: 12,
       childSize: 33,
-      hash: HashOp.SHA256,
-    },
+      hash: HashOp.SHA256
+    }
   };
   const tendermintSpec = {
     leafSpec: {
@@ -152,52 +152,64 @@ export function buildClientState(
       hash: HashOp.SHA256,
       prehashValue: HashOp.SHA256,
       prehashKey: HashOp.NO_HASH,
-      length: LengthOp.VAR_PROTO,
+      length: LengthOp.VAR_PROTO
     },
     innerSpec: {
       childOrder: [0, 1],
       minPrefixLength: 1,
       maxPrefixLength: 1,
       childSize: 32,
-      hash: HashOp.SHA256,
-    },
+      hash: HashOp.SHA256
+    }
   };
 
   return TendermintClientState.fromPartial({
     chainId,
     trustLevel: {
       numerator: 1n,
-      denominator: 3n,
+      denominator: 3n
     },
     unbondingPeriod: {
-      seconds: BigInt(unbondingPeriodSec),
+      seconds: BigInt(unbondingPeriodSec)
     },
     trustingPeriod: {
-      seconds: BigInt(trustPeriodSec),
+      seconds: BigInt(trustPeriodSec)
     },
     maxClockDrift: {
-      seconds: 20n,
+      seconds: 20n
     },
     latestHeight: height,
     proofSpecs: [iavlSpec, tendermintSpec],
-    upgradePath: ["upgrade", "upgradedIBCState"],
+    upgradePath: ['upgrade', 'upgradedIBCState'],
     allowUpdateAfterExpiry: false,
-    allowUpdateAfterMisbehaviour: false,
+    allowUpdateAfterMisbehaviour: false
   });
 }
 
+function isComet38(result: any): result is comet38.BlockResultsResponse {
+  return (result as comet38.BlockResultsResponse).finalizeBlockEvents !== undefined;
+}
+
 export function parsePacketsFromBlockResult(
-  result: tendermint34.BlockResultsResponse | tendermint37.BlockResultsResponse,
+  result: comet38.BlockResultsResponse | tendermint37.BlockResultsResponse
 ): Packet[] {
+  if (isComet38(result)) {
+    const cmtResult = result as comet38.BlockResultsResponse;
+    return parsePacketsFromTendermintEvents([
+      ...cmtResult.finalizeBlockEvents
+    ]);
+  }
+
+  const tmResult = result as tendermint37.BlockResultsResponse;
   return parsePacketsFromTendermintEvents([
-    ...result.beginBlockEvents,
-    ...result.endBlockEvents,
+    ...tmResult.beginBlockEvents,
+    ...tmResult.endBlockEvents
   ]);
 }
 
 /** Those events are normalized to strings already in CosmJS */
 export function parsePacketsFromEvents(events: readonly Event[]): Packet[] {
-  return events.filter(({ type }) => type === "send_packet").map(parsePacket);
+  return events.filter(({ type }) => type === 'send_packet').map(parsePacket);
 }
 
 /**
@@ -205,7 +217,7 @@ export function parsePacketsFromEvents(events: readonly Event[]): Packet[] {
  * and parsed the events into `Packet`s.
  */
 export function parsePacketsFromTendermintEvents(
-  events: readonly (tendermint34.Event | tendermint37.Event)[],
+  events: readonly (comet38.Event | tendermint37.Event)[]
 ): Packet[] {
   return parsePacketsFromEvents(events.map(fromTendermintEvent));
 }
@@ -215,16 +227,16 @@ export function parseHeightAttribute(attribute?: string): Height | undefined {
   // but will need more extensive testing before refactoring.
 
   const [timeoutRevisionNumber, timeoutRevisionHeight] =
-    attribute?.split("-") ?? [];
+  attribute?.split('-') ?? [];
   if (!timeoutRevisionHeight || !timeoutRevisionNumber) {
     return undefined;
   }
 
   const revisionNumber = BigInt(
-    isNaN(Number(timeoutRevisionNumber)) ? 0 : timeoutRevisionNumber,
+    isNaN(Number(timeoutRevisionNumber)) ? 0 : timeoutRevisionNumber
   );
   const revisionHeight = BigInt(
-    isNaN(Number(timeoutRevisionHeight)) ? 0 : timeoutRevisionHeight,
+    isNaN(Number(timeoutRevisionHeight)) ? 0 : timeoutRevisionHeight
   );
   // note: 0 revisionNumber is allowed. If there is bad data, '' or '0-0', we will get 0 for the height
   if (revisionHeight == 0n) {
@@ -234,15 +246,15 @@ export function parseHeightAttribute(attribute?: string): Height | undefined {
 }
 
 export function parsePacket({ type, attributes }: Event): Packet {
-  if (type !== "send_packet") {
+  if (type !== 'send_packet') {
     throw new Error(`Cannot parse event of type ${type}`);
   }
   const attributesObj: Record<string, string> = attributes.reduce(
     (acc, { key, value }) => ({
       ...acc,
-      [key]: value,
+      [key]: value
     }),
-    {},
+    {}
   );
 
   return Packet.fromPartial({
@@ -262,26 +274,26 @@ export function parsePacket({ type, attributes }: Event): Packet {
     /** block height after which the packet times out */
     timeoutHeight: parseHeightAttribute(attributesObj.packet_timeout_height),
     /** block timestamp (in nanoseconds) after which the packet times out */
-    timeoutTimestamp: may(BigInt, attributesObj.packet_timeout_timestamp),
+    timeoutTimestamp: may(BigInt, attributesObj.packet_timeout_timestamp)
   });
 }
 
 export function parseAcksFromTxEvents(events: readonly Event[]): Ack[] {
   return events
-    .filter(({ type }) => type === "write_acknowledgement")
+    .filter(({ type }) => type === 'write_acknowledgement')
     .map(parseAck);
 }
 
 export function parseAck({ type, attributes }: Event): Ack {
-  if (type !== "write_acknowledgement") {
+  if (type !== 'write_acknowledgement') {
     throw new Error(`Cannot parse event of type ${type}`);
   }
   const attributesObj: Record<string, string | undefined> = attributes.reduce(
     (acc, { key, value }) => ({
       ...acc,
-      [key]: value,
+      [key]: value
     }),
-    {},
+    {}
   );
   const originalPacket = Packet.fromPartial({
     sequence: may(BigInt, attributesObj.packet_sequence),
@@ -294,16 +306,16 @@ export function parseAck({ type, attributes }: Event): Ack {
     /** identifies the channel end on the receiving chain. */
     destinationChannel: attributesObj.packet_dst_channel,
     /** actual opaque bytes transferred directly to the application module */
-    data: toUtf8(attributesObj.packet_data ?? ""),
+    data: toUtf8(attributesObj.packet_data ?? ''),
     /** block height after which the packet times out */
     timeoutHeight: parseHeightAttribute(attributesObj.packet_timeout_height),
     /** block timestamp (in nanoseconds) after which the packet times out */
-    timeoutTimestamp: may(BigInt, attributesObj.packet_timeout_timestamp),
+    timeoutTimestamp: may(BigInt, attributesObj.packet_timeout_timestamp)
   });
-  const acknowledgement = toUtf8(attributesObj.packet_ack ?? "");
+  const acknowledgement = toUtf8(attributesObj.packet_ack ?? '');
   return {
     acknowledgement,
-    originalPacket,
+    originalPacket
   };
 }
 
@@ -321,7 +333,7 @@ export function heightGreater(a: Height | undefined, b: Height): boolean {
     Number(a.revisionNumber),
     Number(a.revisionHeight),
     Number(b.revisionNumber),
-    Number(b.revisionHeight),
+    Number(b.revisionHeight)
   ];
   const valid = numA > numB || (numA == numB && heightA > heightB);
   return valid;
@@ -343,7 +355,7 @@ export function timeGreater(a: bigint | undefined, b: number): boolean {
 export function splitPendingPackets(
   currentHeight: Height,
   currentTime: number, // in seconds
-  packets: readonly PacketWithMetadata[],
+  packets: readonly PacketWithMetadata[]
 ): {
   readonly toSubmit: readonly PacketWithMetadata[];
   readonly toTimeout: readonly PacketWithMetadata[];
@@ -355,18 +367,18 @@ export function splitPendingPackets(
         timeGreater(packet.packet.timeoutTimestamp, currentTime);
       return validPacket
         ? {
-            ...acc,
-            toSubmit: [...acc.toSubmit, packet],
-          }
+          ...acc,
+          toSubmit: [...acc.toSubmit, packet]
+        }
         : {
-            ...acc,
-            toTimeout: [...acc.toTimeout, packet],
-          };
+          ...acc,
+          toTimeout: [...acc.toTimeout, packet]
+        };
     },
     {
       toSubmit: [] as readonly PacketWithMetadata[],
-      toTimeout: [] as readonly PacketWithMetadata[],
-    },
+      toTimeout: [] as readonly PacketWithMetadata[]
+    }
   );
 }
 
