@@ -12,23 +12,17 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v6
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Set version from tag
-        run: |
-          # Strip leading 'v' if present in the tag name
-          TAG_VERSION=${GITHUB_REF_NAME#v}
-          npm version --no-git-tag-version "$TAG_VERSION"
+        run: npm ci
 
       - name: Build
         run: npm run build
