@@ -1,0 +1,41 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set version from tag
+        run: |
+          # Strip leading 'v' if present in the tag name
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+          npm version --no-git-tag-version "$TAG_VERSION"
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish (Trusted Publishing)
+        env:
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          npm publish --access public --provenance
