@@ -6,7 +6,8 @@
   "license": "MIT",
   "keywords": [],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "browserslist": [
     "maintained node versions"

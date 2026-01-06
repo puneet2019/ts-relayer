@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +34,5 @@ jobs:
           echo "Publishing version $VERSION from tag $TAG_NAME"
           npm version --no-git-tag-version "$VERSION"
 
-      - name: Publish to npm (latest)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+      - name: Publish to npm with Trusted Publishing
+        run: npm publish --provenance --access public
