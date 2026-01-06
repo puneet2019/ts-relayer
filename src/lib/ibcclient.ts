@@ -21,7 +21,6 @@ import {
   CometClient,
   connectComet,
   ReadonlyDateWithNanoseconds,
-  tendermint34,
   tendermint37,
 } from "@cosmjs/tendermint-rpc";
 import { arrayContentEquals, assert, sleep } from "@cosmjs/utils";
@@ -54,12 +53,7 @@ import {
   ConsensusState as TendermintConsensusState,
   Header as TendermintHeader,
 } from "cosmjs-types/ibc/lightclients/tendermint/v1/tendermint";
-import {
-  blockIDFlagFromJSON,
-  Commit,
-  Header,
-  SignedHeader,
-} from "cosmjs-types/tendermint/types/types";
+import { Commit, Header, SignedHeader } from "cosmjs-types/tendermint/types/types";
 import { ValidatorSet } from "cosmjs-types/tendermint/types/validator";
 
 import { Logger, NoopLogger } from "./logger";
@@ -77,11 +71,8 @@ import {
   toIntHeight,
 } from "./utils";
 
-type CometHeader = tendermint34.Header | tendermint37.Header | comet38.Header;
-type CometCommitResponse =
-  | tendermint34.CommitResponse
-  | tendermint37.CommitResponse
-  | comet38.CommitResponse;
+type CometHeader = tendermint37.Header | comet38.Header;
+type CometCommitResponse = tendermint37.CommitResponse | comet38.CommitResponse;
 
 function deepCloneAndMutate<T extends Record<string, unknown>>(
   object: T,
@@ -381,7 +372,8 @@ export class IbcClient {
     const signatures = rpcCommit.signatures.map((sig) => ({
       ...sig,
       timestamp: sig.timestamp && timestampFromDateNanos(sig.timestamp),
-      blockIdFlag: blockIDFlagFromJSON(sig.blockIdFlag),
+      // blockIdFlag is already a numeric enum in RPC response; pass through as-is
+      blockIdFlag: sig.blockIdFlag as any,
     }));
     const commit = Commit.fromPartial({
       height: BigInt(rpcCommit.height),

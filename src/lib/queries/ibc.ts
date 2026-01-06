@@ -602,7 +602,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
             const key = toAscii(
               `channelEnds/ports/${portId}/channels/${channelId}`,
             );
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               key,
               Number(proofHeight.revisionHeight),
@@ -626,7 +626,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
             const key = toAscii(
               `receipts/ports/${portId}/channels/${channelId}/sequences/${sequence}`,
             );
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               key,
               Number(proofHeight.revisionHeight),
@@ -643,7 +643,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
             const key = toAscii(
               `commitments/ports/${portId}/channels/${channelId}/sequences/${sequence}`,
             );
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               key,
               Number(proofHeight.revisionHeight),
@@ -665,7 +665,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
             const key = toAscii(
               `acks/ports/${portId}/channels/${channelId}/sequences/${sequence}`,
             );
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               key,
               Number(proofHeight.revisionHeight),
@@ -686,7 +686,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
             const key = toAscii(
               `nextSequenceRecv/ports/${portId}/channels/${channelId}`,
             );
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               key,
               Number(proofHeight.revisionHeight),
@@ -706,7 +706,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
         client: {
           state: async (clientId: string, proofHeight: Height) => {
             const key = `clients/${clientId}/clientState`;
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               toAscii(key),
               Number(proofHeight.revisionHeight),
@@ -726,7 +726,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
           ) => {
             const height = heightQueryString(consensusHeight);
             const key = `clients/${clientId}/consensusStates/${height}`;
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               toAscii(key),
               Number(proofHeight.revisionHeight),
@@ -743,7 +743,7 @@ export function setupIbcExtension(base: QueryClient): IbcExtension {
         connection: {
           connection: async (connectionId: string, proofHeight: Height) => {
             const key = `connections/${connectionId}`;
-            const proven = await base.queryRawProof(
+            const proven = await (base as any).queryRawProof(
               "ibc",
               toAscii(key),
               Number(proofHeight.revisionHeight),
