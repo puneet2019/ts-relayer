@@ -50,6 +50,7 @@
     "@cosmjs/stream": "^0.38.0",
     "@cosmjs/tendermint-rpc": "^0.38.0",
     "@cosmjs/utils": "^0.38.0",
+    "@puneet_m/ts-relayer": "^0.0.0",
     "ajv": "7.1.1",
     "axios": "1.12.0",
     "commander": "7.1.0",
