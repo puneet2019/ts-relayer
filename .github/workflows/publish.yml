@@ -2,21 +2,20 @@ name: Publish to npm
 
 on:
   release:
-    types: [published]
-
-permissions:
-  contents: read
-  id-token: write
+    types: [ published ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
@@ -35,7 +34,5 @@ jobs:
         run: npm run build
 
       - name: Publish (Trusted Publishing)
-        env:
-          NPM_CONFIG_PROVENANCE: true
         run: |
-          npm publish --access public --provenance
+          npm publish
