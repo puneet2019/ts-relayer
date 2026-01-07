@@ -1,8 +1,11 @@
 {
-  "name": "@confio/relayer",
-  "version": "0.12.0",
+  "name": "@puneet_m/ts-relayer",
+  "version": "0.0.3",
   "description": "IBC Relayer in TypeScript",
-  "repository": "https://github.com/confio/ts-relayer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puneet2019/ts-relayer.git"
+  },
   "license": "MIT",
   "keywords": [],
   "browserslist": [
@@ -29,7 +32,11 @@
     "proto": "./scripts/proto/get-proto.sh && ./scripts/proto/define-proto.sh && npm run fix"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.38.0",
@@ -42,6 +49,7 @@
     "@cosmjs/stream": "^0.38.0",
     "@cosmjs/tendermint-rpc": "^0.38.0",
     "@cosmjs/utils": "^0.38.0",
+    "@puneet_m/ts-relayer": "^0.0.0",
     "ajv": "7.1.1",
     "axios": "1.12.0",
     "commander": "7.1.0",

@@ -7,7 +7,7 @@ coverage
 *.log
 proto/
 # only commit yarn.lock
-package-lock.json
+#package-lock.json
 
 # MacOS
 .DS_Store
